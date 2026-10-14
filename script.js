@@ -1,0 +1,23 @@
+const $=s=>document.querySelector(s);
+const expressionEl=$("#expression"),resultEl=$("#result"),statusEl=$("#status"),historyList=$("#history-list"),countEl=$("#count"),toastEl=$("#toast");
+let current="0",stored=null,operator=null,waiting=false,expression="",history=[],toastTimer;
+$("#year").textContent=new Date().getFullYear();
+function fmt(n){if(!Number.isFinite(n))return"Error";if(Object.is(n,-0))n=0;return String(Number(n.toPrecision(12)))}
+function paint(){resultEl.textContent=current;resultEl.classList.toggle("error",current==="Error");expressionEl.textContent=expression;statusEl.textContent=current==="Error"?"CHECK YOUR INPUT":operator?"OPERATION IN PROGRESS":"READY FOR INPUT"}
+function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1800)}
+function clear(){current="0";stored=null;operator=null;waiting=false;expression="";paint()}
+function digit(d){if(current==="Error"||waiting){current=d;waiting=false}else if(current.replace("-","").replace(".","").length<15)current=current==="0"?d:current+d;paint()}
+function decimal(){if(current==="Error"||waiting){current="0.";waiting=false}else if(!current.includes("."))current+=".";paint()}
+function calc(a,b,op){return op==="+"?a+b:op==="−"?a-b:op==="×"?a*b:op==="÷"?(b===0?NaN:a/b):b}
+function choose(op){if(current==="Error")clear();const n=Number(current);if(operator&&!waiting){const v=calc(stored,n,operator);if(!Number.isFinite(v)){current="Error";expression="Cannot divide by zero";stored=null;operator=null;paint();return}current=fmt(v)}else stored=n;operator=op;expression=`${fmt(stored)} ${op}`;waiting=true;paint()}
+function equals(){if(!operator||stored===null||current==="Error")return;const a=stored,b=Number(current),op=operator,exp=`${fmt(a)} ${op} ${fmt(b)} =`,v=calc(a,b,op);if(!Number.isFinite(v)){current="Error";expression="Cannot divide by zero";stored=null;operator=null;waiting=true;paint();return}current=fmt(v);expression=exp;history.unshift({exp,result:current});history=history.slice(0,8);stored=null;operator=null;waiting=true;paint();renderHistory()}
+function act(a){if(a==="clear")clear();if(a==="sign"&&current!=="Error"&&Number(current)!==0){current=current.startsWith("-")?current.slice(1):"-"+current;paint()}if(a==="percent"&&current!=="Error"){current=fmt(Number(current)/100);paint()}if(a==="decimal")decimal();if(a==="equals")equals()}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderHistory(){countEl.textContent=String(history.length).padStart(2,"0")+" ENTRIES";historyList.innerHTML=history.length?history.map((x,i)=>`<div class="history-item"><div class="history-expression">${safe(x.exp)}</div><div class="history-row"><span class="history-result">${safe(x.result)}</span><button class="history-use" data-use="${i}">USE ↗</button></div></div>`).join(""):`<div class="empty"><b>↳</b><p>Your calculations will appear here.</p><small>TRY A CALCULATION TO BEGIN</small></div>`}
+$("#keys").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.num!==undefined)digit(b.dataset.num);else if(b.dataset.op)choose(b.dataset.op);else if(b.dataset.action)act(b.dataset.action)});
+document.addEventListener("keydown",e=>{if(/^[0-9]$/.test(e.key))return digit(e.key);if(e.key===".")return decimal();if(e.key==="Enter"||e.key==="="){e.preventDefault();return equals()}if(e.key==="Escape"||e.key==="Delete")return clear();if(e.key==="Backspace"){if(!waiting&&current!=="Error")current=current.length>1?current.slice(0,-1):"0";return paint()}const map={"+":"+","-":"−","*":"×","/":"÷"};if(map[e.key]){e.preventDefault();choose(map[e.key])}if(e.key==="%")act("percent")});
+historyList.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;const item=history[Number(b.dataset.use)];if(!item)return;current=item.result;stored=null;operator=null;waiting=true;expression="RESTORED · "+item.exp;paint();toast("Result restored")});
+$("#clear-history").addEventListener("click",()=>{history=[];renderHistory();toast("History cleared")});
+$("#copy").addEventListener("click",async()=>{if(current==="Error")return toast("No valid value to copy");try{await navigator.clipboard.writeText(current);toast("Copied to clipboard")}catch{toast("Current value: "+current)}});
+$("#theme").addEventListener("click",()=>{document.body.classList.toggle("light");toast(document.body.classList.contains("light")?"Light theme enabled":"Dark theme enabled")});
+paint();renderHistory();

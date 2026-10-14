@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d10"><title>FORMULA — Precision Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"><script src="script.js" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="#"><span class="brand-mark">ƒ</span> FORMULA<span class="accent">.</span></a><div class="top-actions"><span class="live"></span> PRECISION MODE <button id="theme" aria-label="Toggle theme">◐</button></div></header>
+<main class="layout">
+<section class="intro"><div class="eyebrow">YOUR SPACE FOR CLEAR THINKING</div><h1>Make every<br><em>number count.</em></h1><p>A thoughtfully designed calculator for quick arithmetic, everyday problem-solving, and keeping your calculations in view.</p><div class="points"><span><b>01</b> SIMPLE INPUT</span><span><b>02</b> INSTANT RESULTS</span><span><b>03</b> SAVED HISTORY</span></div></section>
+<section class="workspace">
+<div class="calculator"><div class="calc-head"><span><i></i> CALCULATOR</span><span>CORE / 1.0</span></div>
+<div class="display"><div class="display-meta"><span id="status">READY FOR INPUT</span><button id="copy">COPY ↗</button></div><div id="expression" class="expression"></div><div id="result" class="result" aria-live="polite">0</div></div>
+<div class="keys" id="keys">
+<button class="utility" data-action="clear">AC</button><button class="utility" data-action="sign">±</button><button class="utility" data-action="percent">%</button><button class="operator" data-op="÷">÷</button>
+<button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button class="operator" data-op="×">×</button>
+<button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button class="operator" data-op="−">−</button>
+<button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button class="operator" data-op="+">+</button>
+<button class="zero" data-num="0">0</button><button data-action="decimal">.</button><button class="equals" data-action="equals">=</button>
+</div><div class="calc-foot"><span>⌨ KEYBOARD ENABLED</span><span>BUILT FOR CLARITY <b>✳</b></span></div></div>
+<aside class="history"><div class="history-head"><div><div class="eyebrow">YOUR WORKSPACE</div><h2>Recent <em>history.</em></h2></div><button id="clear-history">CLEAR ALL</button></div><p>Your latest calculations, kept close for easy reference.</p><div id="history-list" class="history-list"></div><div class="history-foot"><span>LOCAL SESSION</span><span id="count">00 ENTRIES</span></div></aside>
+</section></main>
+<footer><span>FORMULA<span class="accent">.</span> / PRECISION TOOLS</span><span>DESIGNED FOR EVERYDAY CLARITY</span><span>© <span id="year"></span></span></footer><div class="toast" id="toast" role="status"></div>
+</body></html>
